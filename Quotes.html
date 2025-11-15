@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <link rel="stylesheet" href="Quotes.css">
+  </head>
+  <body>
+  <nav id="nav"><strong>Quotes Generator App</strong></nav>
+    <div id="quote"></div>
+    <button class="btn1" onclick="displayQuotes();">See Quotes</button>
+    <button class="btn2" onclick="addQuotes();">Add Quotes</button>
+    <script>
+ let quotes = [  
+      {  text: "Be yourself; everyone else is already taken.",
+         author:  "— Oscar Wilde" },
+      {  text: "In the middle of every difficulty lies opportunity.",
+         author:"— Albert Einstein"   },
+      {  text:"Do not dwell in the past, do not dream of the future, concentrate the mind on the present moment.",
+         author:"— Buddha"},
+              ];
+
+  
+   let selectedQuotes ={};
+ 
+     function displayQuotes(){
+    
+   let selectedIndex = Math.floor(Math.random()*quotes.length);  
+   selectedQuotes = quotes[selectedIndex];
+    document.querySelector("#quote").innerHTML=`
+    <p>"${selectedQuotes.text}"</p>
+    <p><strong>${selectedQuotes.author}</strong></p>
+     <button  onclick="copyQuote();">Copy Quote</button>`;
+ }         
+ 
+     function copyQuote(){
+   if (!selectedQuotes.text) {
+          alert("⚠️ Please click 'See Quotes' first!");
+          return;
+        }
+
+        let copyText =`${selectedQuotes.text}\n${selectedQuotes.author}`;
+       navigator.clipboard.writeText(copyText)
+      .then(() =>alert("✅ Text successfully copied!"))
+      .catch(err =>alert("❌ Copy failed:"+ err))
+ };
+
+ function addQuotes(){
+   document.querySelector("#quote").innerHTML=`<label for="userInput"><strong>Write Quotes:</strong></label><br>
+<textarea id="userInput" rows="10" cols="40" placeholder="Type your Quote here..."></textarea><br><br>
+<label for="authorInput"><strong>Author Name:</strong></label>
+<input id="authorInput" type="text" placeholder="Enter author name"><br><br>
+  
+  <button id="jsbtn1"  onclick="saveQuotes();">Save Quote</button>
+   <button id="jsbtn2"  onclick="seeYourQuotes();">See Your Quote</button>`
+ };
+
+ function saveQuotes(){
+  let userInput =document.getElementById("userInput").value.trim();
+  let authorInput = document.getElementById("authorInput").value.trim();
+
+  if(userInput=="" ||authorInput==""){
+   alert("Please Enter Your Quote or AuthorName");
+   return;
+  }
+
+  let newObj = {text:userInput,author:authorInput};
+
+  // Get existing array or create a new one
+  let existingQuotes = JSON.parse(localStorage.getItem("myQuotes")) || [];
+
+  existingQuotes.push(newObj); // Add new quote
+  localStorage.setItem("myQuotes", JSON.stringify(existingQuotes));
+
+  alert("✅ Quote added!");
+ };
+
+function seeYourQuotes() {
+  let savedQuotes = JSON.parse(localStorage.getItem("myQuotes")) || [];
+
+  if (savedQuotes.length === 0) {
+    document.querySelector("#quote").innerHTML = "<p>No Saved Quotes Found.</p>";
+    return;
+  }
+
+  let newHTML = "<h3>Your Saved Quotes:</h3>";
+  savedQuotes.forEach((value, index) => {
+    let quoteText = `"${value.text}" — ${value.author}`;
+    let escapedQuote = encodeURIComponent(quoteText);
+
+    newHTML += `
+      <p><em>${index + 1}.</em> ${quoteText}</p>
+      <button onclick="navigator.clipboard.writeText(decodeURIComponent('${escapedQuote}'))
+        .then(() => alert('✅ Quote copied!'))
+        .catch(err => alert('❌ Copy failed: ' + err));">Copy Quote</button><br><br>`;
+  });
+
+  document.querySelector("#quote").innerHTML = newHTML;
+}
+
+ function copyInputQuote() {
+  let userInput = document.getElementById("userInput").value.trim();
+  if (userInput === "") {
+    alert("⚠️ Nothing to copy. Please write something.");
+    return;
+  }
+  navigator.clipboard.writeText(userInput)
+    .then(() => alert("✅ Text copied!"))
+    .catch(err => alert("❌ Copy failed: " + err));
+}
+
+
+    </script>
+  </body>
+</html>
